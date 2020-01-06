@@ -17,6 +17,16 @@ export class UserSignupPage extends Component {
     });
   }
 
+  onClickSignup = () => {
+    const { displayName, username, password } = this.state;
+    const userObject = {
+      username,
+      displayName,
+      password
+    };
+    this.props.actions.postSignup(userObject);
+  }
+
   render() {
     return (
       <div>
@@ -54,11 +64,21 @@ export class UserSignupPage extends Component {
           />
         </div>
         <div>
-          <button>Sign Up</button>
+          <button
+            onClick={this.onClickSignup}
+          >Sign Up</button>
         </div>
       </div>
     );
   }
 }
+
+UserSignupPage.defaultProps = {
+  actions: {
+    postSignup: () => new Promise((resolve, reject) => {
+      resolve({});
+    }),
+  },
+};
 
 export default UserSignupPage;
