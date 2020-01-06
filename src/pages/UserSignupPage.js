@@ -8,7 +8,10 @@ export class UserSignupPage extends Component {
       username: '',
       password: '',
       passwordRepeat: '',
+      pending: false,
     };
+
+    this.onClickSignup = this.onClickSignup.bind(this);
   }
 
   onChangeHandler = (name, e) => {
@@ -24,7 +27,14 @@ export class UserSignupPage extends Component {
       displayName,
       password
     };
-    this.props.actions.postSignup(userObject);
+    this.setState({ pending: true });
+    this.props.actions.postSignup(userObject)
+      .then(response => {
+        this.setState({ pending: false });
+      })
+      .catch(error => {
+        this.setState({ pending: false });
+      });
   }
 
   render() {
@@ -52,7 +62,7 @@ export class UserSignupPage extends Component {
           />
         </div>
         <div className="col-12 mb-3">
-        <label>Password</label>
+          <label>Password</label>
           <input
             className="form-control"
             type="password"
@@ -62,7 +72,7 @@ export class UserSignupPage extends Component {
           />
         </div>
         <div className="col-12 mb-3">
-        <label>Repeat password</label>
+          <label>Repeat password</label>
           <input
             className="form-control"
             type="password"
@@ -75,7 +85,15 @@ export class UserSignupPage extends Component {
           <button
             className="btn btn-primary"
             onClick={this.onClickSignup}
-          >Sign Up</button>
+            disabled={this.state.pending}
+          >
+            {this.state.pending && (
+              <div className="spinner-border text-light spinner-border-sm mr-sm-1" role="status">
+                <span className="sr-only">Loading...</span>
+              </div>
+            )}
+            Sign Up
+          </button>
         </div>
       </div>
     );
