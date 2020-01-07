@@ -8,7 +8,8 @@ export class UserSignupPage extends Component {
       username: '',
       password: '',
       passwordRepeat: '',
-      pending: false,
+      pendingApiCall: false,
+      errors: {}
     };
 
     this.onClickSignup = this.onClickSignup.bind(this);
@@ -27,13 +28,17 @@ export class UserSignupPage extends Component {
       displayName,
       password
     };
-    this.setState({ pending: true });
+    this.setState({ pendingApiCall: true });
     this.props.actions.postSignup(userObject)
       .then(response => {
-        this.setState({ pending: false });
+        this.setState({ pendingApiCall: false });
       })
-      .catch(error => {
-        this.setState({ pending: false });
+      .catch(apiError => {
+        let errors = { ...apiError };
+        if (apiError.response.data && apiError.response.data.validationErrors) {
+          errors = { ...apiError.response.data.validationErrors };
+        }
+        this.setState({ pendingApiCall: false, errors: errors });
       });
   }
 
@@ -44,12 +49,15 @@ export class UserSignupPage extends Component {
         <div className="col-12 mb-3">
           <label>Display Name</label>
           <input
-            className="form-control"
+            className={`form-control`}
             type="text"
             placeholder="Your display name"
             value={this.state.displayName}
             onChange={(e) => this.onChangeHandler('displayName', e)}
           />
+          <div className="invalid-feedback">
+            {this.state.errors.displayName}
+          </div>
         </div>
         <div className="col-12 mb-3">
           <label>Username</label>
@@ -85,9 +93,9 @@ export class UserSignupPage extends Component {
           <button
             className="btn btn-primary"
             onClick={this.onClickSignup}
-            disabled={this.state.pending}
+            disabled={this.state.pendingApiCall}
           >
-            {this.state.pending && (
+            {this.state.pendingApiCall && (
               <div className="spinner-border text-light spinner-border-sm mr-sm-1" role="status">
                 <span className="sr-only">Loading...</span>
               </div>

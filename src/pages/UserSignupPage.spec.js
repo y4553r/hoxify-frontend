@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, cleanup, fireEvent, waitForDomChange } from '@testing-library/react';
+import { render, cleanup, fireEvent, waitForDomChange, waitForElement } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
 
 import { UserSignupPage } from './UserSignupPage';
@@ -49,6 +49,7 @@ describe('UserSignupPage', () => {
       expect(button).toBeInTheDocument();
     });
   });
+
   describe('interactions', () => {
     const changeEvent = content => ({
       target: {
@@ -182,6 +183,24 @@ describe('UserSignupPage', () => {
       const spinner = queryByText('Loading...');
       expect(spinner).not.toBeInTheDocument();
     });
+    it('displays validation error for displayName when error is received for the field', async () => {
+      const actions = {
+        postSignup: jest.fn().mockRejectedValue({
+          response: {
+            data: {
+              validationErrors: {
+                displayName: 'Cannot be null',
+              }
+            }
+          }
+        })
+      };
+
+      const { queryByText } = setupForSubmit({ actions });
+      fireEvent.click(button);
+      const errorMessage = await waitForElement(() => queryByText('Cannot be null'));
+      expect(errorMessage).toBeInTheDocument();
+    })
   });
 });
 
