@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
 
+import Input from '../components/Input';
+
 export class UserSignupPage extends Component {
   constructor(props) {
     super(props);
@@ -47,46 +49,47 @@ export class UserSignupPage extends Component {
       <div className="container">
         <h1 className="text-center">Sign Up</h1>
         <div className="col-12 mb-3">
-          <label>Display Name</label>
-          <input
-            className={`form-control`}
+          <Input
+            label="Your display name"
             type="text"
             placeholder="Your display name"
             value={this.state.displayName}
             onChange={(e) => this.onChangeHandler('displayName', e)}
-          />
-          <div className="invalid-feedback">
-            {this.state.errors.displayName}
-          </div>
+            hasError={this.state.errors.displayName && true}
+            error={this.state.errors.displayName}
+            />
         </div>
         <div className="col-12 mb-3">
-          <label>Username</label>
-          <input
-            className="form-control"
+          <Input
+            label="Your username"
             type="text"
             placeholder="Your username"
             value={this.state.username}
             onChange={e => this.onChangeHandler('username', e)}
-          />
+            hasError={this.state.errors.username && true}
+            error={this.state.errors.username}
+            />
         </div>
         <div className="col-12 mb-3">
-          <label>Password</label>
-          <input
-            className="form-control"
+          <Input
+            label="Your password"
             type="password"
             placeholder='Your password'
             value={this.state.password}
             onChange={e => this.onChangeHandler('password', e)}
-          />
+            hasError={this.state.errors.password && true}
+            error={this.state.errors.password}
+            />
         </div>
         <div className="col-12 mb-3">
-          <label>Repeat password</label>
-          <input
-            className="form-control"
+          <Input
+            label="Repeat your password"
             type="password"
             placeholder='Repeat your password'
             value={this.state.passwordRepeat}
             onChange={e => this.onChangeHandler('passwordRepeat', e)}
+            hasError={this.state.errors.passwordRepeat && true}
+            error={this.state.errors.passwordRepeat}
           />
         </div>
         <div className="text-center">

@@ -1,6 +1,5 @@
 import React from 'react';
-import { render, cleanup, fireEvent, waitForDomChange, waitForElement } from '@testing-library/react';
-import '@testing-library/jest-dom/extend-expect';
+import { render,  fireEvent, cleanup, waitForDomChange, waitForElement } from '@testing-library/react';
 
 import { UserSignupPage } from './UserSignupPage';
 
