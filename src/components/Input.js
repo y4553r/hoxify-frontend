@@ -2,8 +2,8 @@ import React from 'react';
 
 const Input = ({ label, type, placeholder, value, onChange, hasError, error }) => {
   let classes = 'form-control';
-  if (hasError)
-    classes += hasError ? ' is-invalid' : ' is-valid';
+  if (hasError !== undefined)
+    classes = hasError ? 'form-control is-invalid' : 'form-control is-valid';
 
   return (
     <div>

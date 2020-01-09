@@ -11,15 +11,34 @@ export class UserSignupPage extends Component {
       password: '',
       passwordRepeat: '',
       pendingApiCall: false,
-      errors: {}
+      errors: {},
+      passwordRepeatConfirmed: undefined
     };
 
     this.onClickSignup = this.onClickSignup.bind(this);
   }
 
   onChangeHandler = (name, e) => {
+    const value = e.target.value;
+    const errors = { ...this.state.errors };
+    delete errors[name];
     this.setState({
-      [name]: e.target.value,
+      [name]: value,
+      errors
+    }, () => {
+      if (name === "password") {
+        const passwordRepeatConfirmed = this.state.passwordRepeat === value;
+        const errors = { ...this.state.errors };
+        errors.passwordRepeat = passwordRepeatConfirmed ?
+          '' : 'Does not match to password';
+        this.setState({ passwordRepeatConfirmed, errors });
+      } else if (name === "passwordRepeat") {
+        const passwordRepeatConfirmed = this.state.password === value;
+        const errors = { ...this.state.errors };
+        errors.passwordRepeat = passwordRepeatConfirmed ?
+          '' : 'Does not match to password';
+        this.setState({ passwordRepeatConfirmed, errors });
+      }
     });
   }
 
@@ -57,7 +76,7 @@ export class UserSignupPage extends Component {
             onChange={(e) => this.onChangeHandler('displayName', e)}
             hasError={this.state.errors.displayName && true}
             error={this.state.errors.displayName}
-            />
+          />
         </div>
         <div className="col-12 mb-3">
           <Input
@@ -68,7 +87,7 @@ export class UserSignupPage extends Component {
             onChange={e => this.onChangeHandler('username', e)}
             hasError={this.state.errors.username && true}
             error={this.state.errors.username}
-            />
+          />
         </div>
         <div className="col-12 mb-3">
           <Input
@@ -79,7 +98,7 @@ export class UserSignupPage extends Component {
             onChange={e => this.onChangeHandler('password', e)}
             hasError={this.state.errors.password && true}
             error={this.state.errors.password}
-            />
+          />
         </div>
         <div className="col-12 mb-3">
           <Input
@@ -96,7 +115,7 @@ export class UserSignupPage extends Component {
           <button
             className="btn btn-primary"
             onClick={this.onClickSignup}
-            disabled={this.state.pendingApiCall}
+            disabled={this.state.pendingApiCall || !this.state.passwordRepeatConfirmed}
           >
             {this.state.pendingApiCall && (
               <div className="spinner-border text-light spinner-border-sm mr-sm-1" role="status">
