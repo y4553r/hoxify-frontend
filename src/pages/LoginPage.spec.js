@@ -1,5 +1,5 @@
 import React from 'react';
-import { render } from '@testing-library/react';
+import { render, fireEvent } from '@testing-library/react';
 
 import { LoginPage } from './LoginPage';
 
@@ -30,5 +30,26 @@ describe('LoginPage', () => {
       const button = container.querySelector('button');
       expect(button).toBeInTheDocument();
     });
-  })
+  });
+  
+  describe('Interactions', () => {
+    const changeEvent = content => ({
+      target: {
+        value: content
+      }
+    });
+
+    it('sets the username value into state', () => {
+      const { queryByPlaceholderText } = render(<LoginPage />);
+      const usernameInput = queryByPlaceholderText("Your username");
+      fireEvent.change(usernameInput, changeEvent("test-username"));
+      expect(usernameInput.value).toBe("test-username");
+    });
+    it('sets the password value into state', () => {
+      const { queryByPlaceholderText } = render(<LoginPage />);
+      const passwordInput = queryByPlaceholderText("Your password");
+      fireEvent.change(passwordInput, changeEvent("P4ssword"));
+      expect(passwordInput.value).toBe("P4ssword");
+    });
+  });
 });
