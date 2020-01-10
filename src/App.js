@@ -2,6 +2,7 @@ import React from 'react';
 import * as apiCalls from './api/apiCalls';
 
 import UserSignupPage from './pages/UserSignupPage';
+import LoginPage from './pages/LoginPage';
 
 function App() {
   const actions = {
@@ -9,7 +10,8 @@ function App() {
   };
   return (
     <div className="App">
-      <UserSignupPage actions={actions} />
+      {/* <UserSignupPage actions={actions} /> */}
+      <LoginPage />
     </div>
   );
 }
