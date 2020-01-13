@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 
 import Input from '../components/Input';
+import ButtonWithProgress from '../components/ButtonWithProgress';
 
 export class LoginPage extends Component {
   constructor(props) {
@@ -9,6 +10,7 @@ export class LoginPage extends Component {
       username: '',
       password: '',
       apiError: null,
+      pendingApiCall: false,
     };
   }
 
@@ -24,8 +26,13 @@ export class LoginPage extends Component {
       username: this.state.username,
       password: this.state.password,
     };
+    this.setState({ pendingApiCall: true });
     this.props.actions.postLogin(userObject)
+      .then(response => {
+        this.setState({ pendingApiCall: false });
+      })
       .catch(error => {
+        this.setState({ pendingApiCall: false });
         if (error.response)
           this.setState({ apiError: error.response.data.message })
       });
@@ -61,13 +68,12 @@ export class LoginPage extends Component {
             </div>
           </div>
         )}
-        <div className="text-center">
-          <button
-            className="btn btn-primary"
-            onClick={this.onClickLogin}
-            disabled={disableButton}
-          >Login</button>
-        </div>
+        <ButtonWithProgress
+          onClick={this.onClickLogin}
+          disabled={disableButton || this.state.pendingApiCall}
+          pendingApiCall={this.state.pendingApiCall}
+          text="Login"
+        />
       </div>
     );
   }

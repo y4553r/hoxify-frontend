@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, fireEvent, waitForElement, queryByTestId } from '@testing-library/react';
+import { render, fireEvent, waitForElement, queryByTestId, waitForDomChange } from '@testing-library/react';
 
 import { LoginPage } from './LoginPage';
 
@@ -38,6 +38,16 @@ describe('LoginPage', () => {
         value: content
       }
     });
+
+    const mockAsyncDelai = () => {
+      return jest.fn().mockImplementation(() => {
+        return new Promise((resolve, reject) => {
+          setTimeout(() => {
+            resolve({});
+          }, 300);
+        })
+      })
+    };
 
     let usernameInput, passwordInput, button;
     const setupForSubmit = (props) => {
@@ -149,5 +159,57 @@ describe('LoginPage', () => {
       const alert = queryByText('Login failed');
       expect(alert).not.toBeInTheDocument();
     });
+    it('does not allow user to click login button when there is an ongoing request', () => {
+      const actions = {
+        postLogin: jest.fn().mockResolvedValue({})
+      };
+      setupForSubmit({ actions });
+      fireEvent.click(button);
+      fireEvent.click(button);
+      expect(actions.postLogin).toHaveBeenCalledTimes(1);
+    });
+    it('displays spinner when there is an ongoing api call', () => {
+      const actions = {
+        postLogin: mockAsyncDelai(),
+      };
+      const { queryByText } = setupForSubmit({ actions });
+      fireEvent.click(button);
+      const spinner = queryByText('Loading...');
+      expect(spinner).toBeInTheDocument();
+    });
+    it('hides spinner after api call finishes successfully', async () => {
+      const actions = {
+        postLogin: mockAsyncDelai(),
+      };
+      const { queryByText } = setupForSubmit({ actions });
+      fireEvent.click(button);
+      await waitForDomChange();
+      const spinner = queryByText('Loading...');
+      expect(spinner).not.toBeInTheDocument();
+    });
+    it('hides spinner after api call finishes with error', async () => {
+      const actions = {
+        postLogin: jest.fn().mockImplementation(() => {
+          return new Promise((resolve, reject) => {
+            setTimeout(() => {
+              reject({
+                response: {
+                  data: {
+                    message: 'Login failed',
+                  }
+                }
+              })
+            }, 300);
+          });
+        }),
+      };
+      const { queryByText } = setupForSubmit({ actions });
+      fireEvent.click(button);
+      await waitForDomChange();
+      const spinner = queryByText('Loading...');
+      expect(spinner).not.toBeInTheDocument();
+    });
   });
 });
+
+console.error = () => { };
