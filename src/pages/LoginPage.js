@@ -8,17 +8,32 @@ export class LoginPage extends Component {
     this.state = {
       username: '',
       password: '',
+      apiError: 'Login failure',
     };
   }
 
   onChangeHandler = (name, event) => {
     this.setState({
       [name]: event.target.value,
+      apiError: null
     });
   }
 
+  onClickLogin = () => {
+    const userObject = {
+      username: this.state.username,
+      password: this.state.password,
+    };
+    this.props.actions.postLogin(userObject)
+      .catch(error => {
+        if (error.response)
+          this.setState({ apiError: error.response.data.message })
+      });
+  }
+
   render() {
-    const { username, password } = this.state;
+    const { username, password, apiError } = this.state;
+    const disableButton = username === '' || password === '';
     return (
       <div className="container">
         <h1 className="text-center">Login</h1>
@@ -39,11 +54,28 @@ export class LoginPage extends Component {
             placeholder="Your password"
           />
         </div>
+        {apiError && (
+          <div className="col-12 mb-3">
+            <div className="alert alert-danger" role="alert">
+              {apiError}
+            </div>
+          </div>
+        )}
         <div className="text-center">
-          <button className="btn btn-primary">Login</button>
+          <button
+            className="btn btn-primary"
+            onClick={this.onClickLogin}
+            disabled={disableButton}
+          >Login</button>
         </div>
       </div>
     );
+  }
+}
+
+LoginPage.defaultProps = {
+  actions: {
+    postLogin: () => new Promise((resolve, reject) => resolve({})),
   }
 }
 
