@@ -8,7 +8,7 @@ export class LoginPage extends Component {
     this.state = {
       username: '',
       password: '',
-      apiError: 'Login failure',
+      apiError: null,
     };
   }
 
