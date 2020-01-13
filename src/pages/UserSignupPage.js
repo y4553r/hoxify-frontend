@@ -116,7 +116,7 @@ export class UserSignupPage extends Component {
           onClick={this.onClickSignup}
           disabled={this.state.pendingApiCall || !this.state.passwordRepeatConfirmed}
           pendingApiCall={this.state.pendingApiCall}
-          texr='Sign up'
+          text='Sign up'
         />
       </div>
     );
