@@ -1,14 +1,38 @@
 import React from 'react';
 import { render } from '@testing-library/react';
+import { MemoryRouter } from 'react-router-dom';
+import { Provider } from 'react-redux';
+import { createStore } from 'redux';
 
 import TopBar from './TopBar';
-import { MemoryRouter } from 'react-router-dom';
+import authReducer from '../redux/authReducer';
 
-const setup = () => {
+const loggedInState = {
+  id: 1,
+  username: 'user1',
+  displayName: 'display1',
+  image: 'image1',
+  password: 'P4ssword',
+  isLoggedIn: true,
+};
+
+const defaultState = {
+  id: 0,
+  username: '',
+  displayName: '',
+  image: '',
+  password: '',
+  isLoggedIn: false,
+};
+
+const setup = (state = defaultState) => {
+  const store = createStore(authReducer, state);
   return render(
-    <MemoryRouter>
-      <TopBar />
-    </MemoryRouter>
+    <Provider store={store}>
+      <MemoryRouter>
+        <TopBar />
+      </MemoryRouter>
+    </Provider>
   );
 }
 
@@ -33,6 +57,16 @@ describe('TopBar', () => {
       const { queryByText } = setup();
       const loginLink = queryByText("Login");
       expect(loginLink.getAttribute("href")).toBe('/login');
-    })
+    });
+    it('has link to logout when user logged in', () => {
+      const { queryByText } = setup(loggedInState);
+      const logoutLink = queryByText('Logout');
+      expect(logoutLink).toBeInTheDocument();
+    });
+    it('has link to usr profile when user logged in', () => {
+      const { queryByText } = setup(loggedInState);
+      const profileLink = queryByText('Profile');
+      expect(profileLink.getAttribute('href')).toBe('/user1');
+    });
   })
 })

@@ -6,9 +6,18 @@ import { Provider } from 'react-redux';
 import { createStore } from 'redux';
 
 import App from './containers/App';
-import authReducer from './redux/authReduxer';
+import authReducer from './redux/authReducer';
 
-const store = createStore(authReducer);
+const loggedInState = {
+  id: 1,
+  username: 'user1',
+  displayName: 'display1',
+  image: 'image1',
+  password: 'P4ssword',
+  isLoggedIn: true,
+};
+
+const store = createStore(authReducer, loggedInState);
 
 const app = (
   <Provider store={store}>
