@@ -6,6 +6,7 @@ import HomePage from '../pages/HomePage';
 import LoginPage from '../pages/LoginPage';
 import UserSignupPage from '../pages/UserSignupPage';
 import UserPage from '../pages/UserPage';
+import TopBar from '../components/TopBar';
 
 function App() {
   const actions = {
@@ -14,6 +15,7 @@ function App() {
   };
   return (
     <div>
+      <TopBar />
       <div className="container">
         <Switch>
           <Route exact path="/" component={HomePage} />
