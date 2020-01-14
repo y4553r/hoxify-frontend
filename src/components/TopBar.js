@@ -5,6 +5,13 @@ import { connect } from 'react-redux';
 import logo from '../assets/hoaxify-logo.png';
 
 export class TopBar extends Component {
+  onClickLogout = () => {
+    const action = {
+      type: 'LOGOUT-SUCCESS',
+    };
+    this.props.dispatch(action);
+  }
+
   render() {
     const { user } = this.props;
     const { id, username, displayName, password, image, isLoggedIn } = user;
@@ -14,12 +21,12 @@ export class TopBar extends Component {
         <li className="nav-item">
           <Link to="/signup" className="nav-link">
             Sign up
-                </Link>
+          </Link>
         </li>
         <li className="nav-item">
           <Link to="/login" className="nav-link">
             Login
-                </Link>
+          </Link>
         </li>
       </ul>
     );
@@ -31,10 +38,8 @@ export class TopBar extends Component {
               Profile
             </Link>
           </li>
-          <li className="nav-item">
-            <Link to="/logout" className="nav-link">
-              Logout
-            </Link>
+          <li className="nav-item nav-link" onClick={this.onClickLogout} style={{cursor: 'pointer'}}>
+            Logout
           </li>
         </ul>
       );

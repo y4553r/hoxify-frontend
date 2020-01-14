@@ -8,5 +8,10 @@ const initialState = {
 };
 
 export default function authReducer(state = initialState, action) {
-  return state;
+  switch (action.type) {
+    case 'LOGOUT-SUCCESS':
+      return { ...initialState };
+    default:
+      return state;
+  }
 }

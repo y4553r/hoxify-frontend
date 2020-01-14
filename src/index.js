@@ -3,7 +3,8 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import { HashRouter } from 'react-router-dom';
 import { Provider } from 'react-redux';
-import { createStore } from 'redux';
+import { createStore, applyMiddleware } from 'redux';
+import logger from 'redux-logger';
 
 import App from './containers/App';
 import authReducer from './redux/authReducer';
@@ -17,7 +18,7 @@ const loggedInState = {
   isLoggedIn: true,
 };
 
-const store = createStore(authReducer, loggedInState);
+const store = createStore(authReducer, loggedInState, applyMiddleware(logger));
 
 const app = (
   <Provider store={store}>
