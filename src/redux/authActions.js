@@ -14,5 +14,14 @@ export const loginHandler = credentials => {
         dispatch(loginSuccess({ ...response.data, password: credentials.password }));
         return response;
       });
+  };
+};
+
+export const signupHandler = user => {
+  return dispatch => {
+    return apiCalls.signup(user)
+      .then(response => {
+        return dispatch(loginHandler(user));
+      });
   }
 }
