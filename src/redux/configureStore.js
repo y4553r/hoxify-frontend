@@ -5,8 +5,30 @@ import logger from 'redux-logger';
 import authReducer from './authReducer';
 
 export default (addLogger = true) => {
+  let localStorageData = localStorage.getItem('hoax-auth');
+
+  let persistedState = {
+    id: 0,
+    username: '',
+    displayName: '',
+    password: '',
+    image: '',
+    isLoggedIn: false,
+  };
+  if(localStorageData) {
+    try {
+      persistedState = JSON.parse(localStorageData);
+    } catch (error) {}
+  }
+
   const middlewares = [thunk];
   if(addLogger)
     middlewares.push(logger)
-  return createStore(authReducer, applyMiddleware(...middlewares));
+  const store = createStore(authReducer, persistedState, applyMiddleware(...middlewares));
+
+  store.subscribe(() => {
+    localStorage.setItem('hoax-auth', JSON.stringify(store.getState()));
+  }); 
+
+  return store;
 }
