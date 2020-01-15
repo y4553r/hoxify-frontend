@@ -3,6 +3,7 @@ import thunk from 'redux-thunk';
 import logger from 'redux-logger';
 
 import authReducer from './authReducer';
+import * as apiCalls from '../api/apiCalls';
 
 export default (addLogger = true) => {
   let localStorageData = localStorage.getItem('hoax-auth');
@@ -18,6 +19,7 @@ export default (addLogger = true) => {
   if(localStorageData) {
     try {
       persistedState = JSON.parse(localStorageData);
+      apiCalls.setAuthorizationHeader(persistedState);
     } catch (error) {}
   }
 
@@ -28,6 +30,7 @@ export default (addLogger = true) => {
 
   store.subscribe(() => {
     localStorage.setItem('hoax-auth', JSON.stringify(store.getState()));
+    apiCalls.setAuthorizationHeader(store.getState());
   }); 
 
   return store;
