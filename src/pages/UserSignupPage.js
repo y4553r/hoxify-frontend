@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 
 import Input from '../components/Input';
 import ButtonWithProgress from '../components/ButtonWithProgress';
+import { connect } from 'react-redux';
 
 export class UserSignupPage extends Component {
   constructor(props) {
@@ -53,9 +54,30 @@ export class UserSignupPage extends Component {
     this.setState({ pendingApiCall: true });
     this.props.actions.postSignup(userObject)
       .then(response => {
-        this.setState({ pendingApiCall: false }, () => {
-          this.props.history.push('/');
-        });
+        const userObject = {
+          username: this.state.username,
+          password: this.state.password,
+        };
+        this.setState({ pendingApiCall: true });
+        this.props.actions.postLogin(userObject)
+          .then(response => {
+            const action = {
+              type: 'LOGIN_SUCCESS',
+              payload: { ...response.data, password: this.state.password }
+            }
+            this.props.dispatch(action);
+            this.setState({ pendingApiCall: false }, () => {
+              this.props.history.push('/');
+            });
+          })
+          .catch(error => {
+            this.setState({ pendingApiCall: false });
+            if (error.response)
+              this.setState({ apiError: error.response.data.message })
+          });
+        // this.setState({ pendingApiCall: false }, () => {
+        //   this.props.history.push('/');
+        // });
       })
       .catch(apiError => {
         let errors = { ...apiError };
@@ -132,8 +154,8 @@ UserSignupPage.defaultProps = {
     }),
   },
   history: {
-    push: () => {}
+    push: () => { }
   }
 };
 
-export default UserSignupPage;
+export default connect()(UserSignupPage);

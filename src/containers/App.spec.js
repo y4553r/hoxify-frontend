@@ -1,14 +1,14 @@
 import React from 'react';
-import { render, fireEvent } from '@testing-library/react';
+import { render, fireEvent, waitForElement } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { Provider } from 'react-redux';
-import { createStore } from 'redux';
+import axios from 'axios';
 
 import App from './App';
-import authReducer from '../redux/authReducer';
+import configureStore from '../redux/configureStore';
 
 const setup = path => {
-  const store = createStore(authReducer);
+  const store = configureStore(false);
   return render(
     <Provider store={store}>
       <MemoryRouter initialEntries={[path]}>
@@ -16,7 +16,12 @@ const setup = path => {
       </MemoryRouter>
     </Provider>
   );
-}
+};
+const changeEvent = content => ({
+  target: {
+    value: content,
+  }
+});
 
 describe('App', () => {
   it('displays HomePage when url is /', () => {
@@ -80,4 +85,53 @@ describe('App', () => {
     fireEvent.click(logo);
     expect(queryByTestId('homepage')).toBeInTheDocument();
   });
+  it('displays my profile on topbar after login success', async () => {
+    const { queryByPlaceholderText, container, queryByText } = setup('/login');
+    const userNameInput = queryByPlaceholderText('Your username');
+    const passwordInput = queryByPlaceholderText('Your password');
+    fireEvent.change(userNameInput, changeEvent('user1'));
+    fireEvent.change(passwordInput, changeEvent('P4ssword'));
+    const button = container.querySelector('button');
+    axios.post = jest.fn().mockResolvedValue({
+      data: {
+        id: 1,
+        username: 'user1',
+        displayName: 'display1',
+        image: 'profile1.png',
+      }
+    });
+    fireEvent.click(button);
+    const myProfileLink = await waitForElement(() => queryByText('Profile'));
+    expect(myProfileLink).toBeInTheDocument();
+  });
+  it('displays profile on topbar after signup success', async () => {
+    const { queryByPlaceholderText, container, queryByText } = setup('/signup');
+
+    const displayNameInput = queryByPlaceholderText('Your display name');
+    const usernameInput = queryByPlaceholderText('Your username');
+    const passwordInput = queryByPlaceholderText('Your password');
+    const passwordRepeatInput = queryByPlaceholderText('Repeat your password');
+
+    fireEvent.change(displayNameInput, changeEvent('my-display-name'));
+    fireEvent.change(usernameInput, changeEvent('my-username'));
+    fireEvent.change(passwordInput, changeEvent('P4ssword'));
+    fireEvent.change(passwordRepeatInput, changeEvent('P4ssword'));
+
+    const button = container.querySelector('button');
+    axios.post = jest.fn().mockResolvedValueOnce({
+      data: {
+        message: "User saved",
+      },
+    }).mockResolvedValueOnce({
+      data: {
+        id: 1,
+        username: 'user1',
+        displayName: 'display1',
+        image: 'profile1.png',
+      } 
+    });
+    fireEvent.click(button);
+    const myProfileLink = await waitForElement(() => queryByText('Profile'));
+    expect(myProfileLink).toBeInTheDocument();
+  })
 });

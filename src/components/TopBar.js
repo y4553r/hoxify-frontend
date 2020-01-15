@@ -7,7 +7,7 @@ import logo from '../assets/hoaxify-logo.png';
 export class TopBar extends Component {
   onClickLogout = () => {
     const action = {
-      type: 'LOGOUT-SUCCESS',
+      type: 'LOGOUT_SUCCESS',
     };
     this.props.dispatch(action);
   }
